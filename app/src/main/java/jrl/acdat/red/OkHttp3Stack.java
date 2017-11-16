@@ -2,7 +2,6 @@ package jrl.acdat.red;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
-import com.android.volley.Response;
 import com.android.volley.toolbox.HttpStack;
 
 import org.apache.http.HttpEntity;
@@ -18,10 +17,17 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Headers;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+
 /**
  * Created by Allen Lin on 2016/02/17.
  */
-/*
 public class OkHttp3Stack implements HttpStack {
     private final OkHttpClient mClient;
 
@@ -159,4 +165,4 @@ public class OkHttp3Stack implements HttpStack {
         }
         return response;
     }
-}*/
+}

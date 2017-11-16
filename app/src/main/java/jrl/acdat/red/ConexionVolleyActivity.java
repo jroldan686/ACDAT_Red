@@ -26,6 +26,8 @@ import com.android.volley.toolbox.Volley;
 
 import java.io.UnsupportedEncodingException;
 
+import okhttp3.OkHttpClient;
+
 public class ConexionVolleyActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final String TAG = "MyTag";
@@ -44,6 +46,9 @@ public class ConexionVolleyActivity extends AppCompatActivity implements View.On
         btnConectar.setOnClickListener(this);
         wbvWeb = (WebView) findViewById(R.id.wbvWeb);
         txvTiempo = (TextView)findViewById(R.id.txvTiempo);
+
+        // Se pone la siguiente línea cuando se usa el patrón Singleton para crear una única cola
+        mRequestQueue = Volley.newRequestQueue(this.getApplicationContext(), new OkHttp3Stack(new OkHttpClient()));
     }
     @Override
     public void onClick(View view) {
@@ -56,7 +61,7 @@ public class ConexionVolleyActivity extends AppCompatActivity implements View.On
     public void makeRequest(String url) {
         final String enlace = url;
         // Instantiate the RequestQueue.
-        mRequestQueue = Volley.newRequestQueue(this);
+        //mRequestQueue = Volley.newRequestQueue(this);     // Se comenta porque se usa el patrón Singleton y ya crea una cola
 
         final long inicio;
 
@@ -122,31 +127,4 @@ public class ConexionVolleyActivity extends AppCompatActivity implements View.On
             mRequestQueue.cancelAll(TAG);
         }
     }
-/*
-    public class MySingleton {
-        private static MySingleton mInstance;
-        private RequestQueue mRequestQueue;
-        private static Context mCtx;
-        private MySingleton(Context context) {
-            mCtx = context;
-            mRequestQueue = getRequestQueue();
-        }
-        public static synchronized MySingleton getInstance(Context context) {
-            if (mInstance == null) {
-                mInstance = new MySingleton(context);
-            }
-            return mInstance;
-        }
-        public RequestQueue getRequestQueue() {
-            if (mRequestQueue == null) {
-                // getApplicationContext() is key, it keeps you from leaking the
-                // Activity or BroadcastReceiver if someone passes one in.
-                //mRequestQueue = Volley.newRequestQueue(mCtx.getApplicationContext());
-                mRequestQueue = Volley.newRequestQueue(mCtx.getApplicationContext(), new
-                        OkHttp3Stack(new OkHttpClient()));
-            }
-            return mRequestQueue;
-        }
-    }
-*/
 }
