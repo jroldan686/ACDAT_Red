@@ -33,12 +33,25 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Descargar ficheros" />
+
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/txvFichero"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:id="@+id/scvDesplazamiento">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txvFichero"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </ScrollView>
 
     <ImageView
         android:id="@+id/imgvImagen"

@@ -6,11 +6,13 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.Image;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,19 +27,23 @@ import cz.msebera.android.httpclient.Header;
 import okhttp3.OkHttpClient;
 
 public class DescargaImagenesArchivosActivity extends AppCompatActivity implements View.OnClickListener {
+
     TextView txvFichero;
+    ScrollView scvDesplazamiento;
     EditText edtUrl;
     Button btnDescargarImagenes;
     Button btnDescargarFicheros;
     ImageView imgvImagen;
     Memoria memoria;
     Resultado resultado;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_descarga_imagenes_archivos);
         txvFichero = (TextView)findViewById(R.id.txvFichero);
         txvFichero.setVisibility(View.INVISIBLE);
+        scvDesplazamiento = (ScrollView)findViewById(R.id.scvDesplazamiento);
         edtUrl = (EditText) findViewById(R.id.edtUrl);
         btnDescargarImagenes = (Button) findViewById(R.id.btnDescargarImagenes);
         btnDescargarImagenes.setOnClickListener(this);
@@ -52,11 +58,13 @@ public class DescargaImagenesArchivosActivity extends AppCompatActivity implemen
         String url = edtUrl.getText().toString();
         if (v == btnDescargarImagenes) {
             txvFichero.setVisibility(View.INVISIBLE);
+            scvDesplazamiento.setVisibility(View.INVISIBLE);
             imgvImagen.setVisibility(View.VISIBLE);
             descargaImagen(url);
         }
         if (v == btnDescargarFicheros) {
             imgvImagen.setVisibility(View.INVISIBLE);
+            scvDesplazamiento.setVisibility(View.VISIBLE);
             txvFichero.setVisibility(View.VISIBLE);
             descargaFichero(url);
         }
@@ -85,8 +93,10 @@ public class DescargaImagenesArchivosActivity extends AppCompatActivity implemen
 
     private void descargaFichero(String url) {
         final ProgressDialog progreso = new ProgressDialog(this);
+        File fichero = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
+
         AsyncHttpClient client = new AsyncHttpClient();
-        client.get(url, new FileAsyncHttpResponseHandler(/* Context */ this) {
+        client.get(url, new FileAsyncHttpResponseHandler(fichero) {
             @Override
             public void onStart() {
                 super.onStart();
@@ -98,32 +108,25 @@ public class DescargaImagenesArchivosActivity extends AppCompatActivity implemen
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, File file) {
                 progreso.dismiss();
+                txvFichero.setText("StatusCode: " + statusCode + "\nMessage: " + throwable.getMessage());
                 Toast.makeText(getApplicationContext(), "Fallo en la descarga", Toast.LENGTH_LONG).show();
             }
             @Override
             public void onSuccess(int statusCode, Header[] headers, File response) {
                 progreso.dismiss();
                 Toast.makeText(getApplicationContext(), "Descarga con éxito", Toast.LENGTH_LONG).show();
-                /*if(memoria.disponibleLectura()) {
-                    resultado = memoria.leerExterna(response.toString(), "UTF-8");
-                } else {
-                    Toast.makeText(getApplicationContext(), "La memoria externa no está disponible para leer", Toast.LENGTH_LONG).show();
-                }
-                if(resultado.getCodigo())
-                    txvFichero.setText(resultado.getContenido());
-                else
-                    Toast.makeText(getApplicationContext(), "What?", Toast.LENGTH_LONG).show();
-                */
                 if(memoria.disponibleEscritura()) {
-                    resultado = memoria.leerExterna(response.getAbsolutePath(), "UTF-8");
+                    resultado = memoria.leerExterna(response.getName(), "UTF-8");
                     if(resultado.getCodigo())
                         txvFichero.setText(resultado.getContenido());
                     else {
-                        txvFichero.setText("");
+                        txvFichero.setText("StatusCode: " + statusCode);
                         Toast.makeText(DescargaImagenesArchivosActivity.this, "Error al leer " + response.getAbsolutePath() + " " + resultado.getMensaje(), Toast.LENGTH_LONG).show();
                     }
-                } else
+                } else {
+                    txvFichero.setText("StatusCode: " + statusCode);
                     Toast.makeText(DescargaImagenesArchivosActivity.this, "Memoria externa no disponible", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
