@@ -22,6 +22,7 @@ public class SubirArchivosActivity extends AppCompatActivity {
 
     //public static final String WEB = "http://192.168.3.57/acceso/upload.php";
     public static final String WEB = "https://alumno.mobi/~alumno/superior/roldan/upload.php";
+    public static final String PASSWORD = "alumno2017";
 
     TextView txvInformacion;
     EditText edtFichero;
@@ -53,6 +54,7 @@ public class SubirArchivosActivity extends AppCompatActivity {
         RequestParams params = new RequestParams();
         try {
             params.put("fileToUpload", myFile);
+            params.put("password", PASSWORD);
         } catch (FileNotFoundException e) {
             existe = false;
             txvInformacion.setText("Error en el fichero: " + e.getMessage());
